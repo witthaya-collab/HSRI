@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Summary Dashboard — HSRI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d1117; --surf:#161b27; --card:#1c2333; --card2:#1e2740; --inp:#0d1117;
+  --b:rgba(255,255,255,0.07); --b2:rgba(255,255,255,0.14);
+  --t:#e8eaf0; --t2:#8b94a8; --t3:#5a6478;
+  --cy:#00d4ff; --cyd:rgba(0,212,255,0.12); --cyd2:rgba(0,212,255,0.22);
+  --gn:#00d9a3; --gnd:rgba(0,217,163,0.12);
+  --rd:#ff5b5b; --rdd:rgba(255,91,91,0.12);
+  --am:#ffb340; --amd:rgba(255,179,64,0.12);
+  --pu:#a78bfa; --pud:rgba(167,139,250,0.12);
+  --bl:#60a5fa; --bld:rgba(96,165,250,0.12);
+  --f:'Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--f);background:var(--bg);color:var(--t);font-size:14px;line-height:1.5;min-height:100vh;}
+
+/* NAV */
+.topnav{background:var(--surf);border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 20px;height:52px;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--t);margin-right:28px;white-space:nowrap;flex-shrink:0;}
+.logo-icon{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#00d4ff,#7c3aed);display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:16px;height:16px;color:#fff;}
+.ntabs{display:flex;flex:1;overflow-x:auto;}
+.ntab{display:flex;align-items:center;gap:7px;padding:0 16px;height:52px;font-size:13px;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--f);flex-shrink:0;}
+.ntab svg{width:15px;height:15px;}
+.ntab:hover{color:var(--t);}
+.ntab.active{color:var(--cy);border-bottom-color:var(--cy);}
+.nr{margin-left:auto;display:flex;align-items:center;gap:10px;}
+
+/* PAGE */
+.page{display:none;}
+.page.active{display:block;}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;padding:24px 24px 20px;}
+.pt{font-size:22px;font-weight:700;}
+.ps{font-size:13px;color:var(--t2);margin-top:4px;}
+.ha{display:flex;gap:10px;align-items:center;}
+.wrap{padding:0 24px 40px;}
+
+/* BUTTONS */
+.bo{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;font-family:var(--f);cursor:pointer;border:1px solid var(--b2);background:var(--card);color:var(--t2);}
+.bo:hover{color:var(--t);background:var(--card2);}
+.bo svg{width:14px;height:14px;}
+.bp{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;font-size:13px;font-family:var(--f);cursor:pointer;border:none;background:linear-gradient(135deg,#00d4ff,#0090cc);color:#000;font-weight:700;}
+.bp:hover{opacity:0.88;}
+.bp svg{width:14px;height:14px;}
+
+/* CAMPAIGN SUB-TAB */
+.ctabs{display:flex;border-bottom:1px solid var(--b);margin-bottom:20px;}
+.ct{display:flex;align-items:center;gap:6px;padding:10px 16px 9px;font-size:13px;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--f);}
+.ct svg{width:14px;height:14px;}
+.ct.active{color:var(--cy);border-bottom-color:var(--cy);}
+.ctab-panel{display:none;}
+.ctab-panel.active{display:block;}
+
+/* SUMMARY CARDS */
+.sum2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.scard{background:var(--card);border:1px solid var(--b);border-radius:12px;padding:20px 22px;}
+.scard-label{font-size:13px;color:var(--t2);margin-bottom:12px;}
+.scard-val{font-size:36px;font-weight:700;color:var(--t);line-height:1;margin-bottom:6px;}
+.scard-sub{font-size:12px;color:var(--t2);}
+.prog-bar{height:5px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;margin-bottom:5px;}
+.prog-fill{height:100%;border-radius:99px;background:var(--gn);}
+.scard-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+
+/* TABLE */
+.tcard{background:var(--card);border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.tcard-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 14px;}
+.tcard-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.tcard-title svg{width:16px;height:16px;color:var(--cy);}
+.divider{height:1px;background:var(--b);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);white-space:nowrap;}
+td{padding:12px 16px;border-bottom:1px solid var(--b);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:rgba(255,255,255,.02);}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;}
+.badge-gn{background:var(--gnd);color:var(--gn);}
+.badge-am{background:var(--amd);color:var(--am);}
+.pag{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;font-size:12px;color:var(--t3);}
+.pbs{display:flex;gap:4px;}
+.pb{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;font-family:var(--f);border:1px solid var(--b);background:transparent;color:var(--t2);}
+.pb.active{background:var(--cy);color:#000;border-color:var(--cy);font-weight:700;}
+.pb.off{opacity:.3;pointer-events:none;}
+.ib{width:28px;height:28px;border-radius:6px;background:transparent;border:1px solid var(--b);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);margin-left:3px;}
+.ib:hover{background:var(--card2);color:var(--t);}
+.ib svg{width:13px;height:13px;}
+
+/* NEWS CLIPPING */
+.metrics4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.mcard{background:var(--card);border:1px solid var(--b);border-radius:12px;padding:16px 18px;}
+.mcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.mcard-lbl{font-size:11px;color:var(--t2);font-weight:500;}
+.mcard-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.mcard-icon svg{width:16px;height:16px;}
+.mcard-val{font-size:26px;font-weight:700;line-height:1;margin-bottom:4px;}
+.mcard-sub{font-size:11px;color:var(--t3);}
+.mcard-d{font-size:11px;display:flex;align-items:center;gap:3px;font-weight:500;color:var(--gn);}
+.nc-tbar{display:flex;gap:10px;align-items:center;padding:14px 20px 12px;}
+.sw{position:relative;flex:1;max-width:320px;}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);}
+.si svg{width:14px;height:14px;display:block;}
+input,select,textarea{background:var(--inp);border:1px solid var(--b2);border-radius:7px;color:var(--t);font-family:var(--f);font-size:13px;padding:7px 11px;width:100%;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cy);}
+input::placeholder,textarea::placeholder{color:var(--t3);}
+.sw input{padding-left:32px;}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%235a6478' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.fsel{width:auto;min-width:150px;}
+.ht{font-size:13px;font-weight:500;color:var(--t);max-width:280px;line-height:1.4;}
+.hs{font-size:11px;color:var(--t3);margin-top:2px;}
+.cb{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px;}
+.cb-on{background:var(--cyd);color:var(--cy);}
+.cb-so{background:var(--amd);color:var(--am);}
+.cb-pr{background:var(--pud);color:var(--pu);}
+.nb{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;}
+.nb-gn{background:var(--gnd);color:var(--gn);}
+.nb-rd{background:var(--rdd);color:var(--rd);}
+.nb-gr{background:rgba(255,255,255,.06);color:var(--t2);}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.ibnc{width:28px;height:28px;border-radius:6px;background:transparent;border:1px solid var(--b);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);margin-left:3px;}
+.ibnc:hover{background:var(--card2);color:var(--t);}
+.ibnc.del:hover{background:var(--rdd);color:var(--rd);}
+.ibnc svg{width:13px;height:13px;}
+
+/* SIDE PANEL */
+#sp-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:150;}
+#sp{display:none;position:fixed;top:0;right:0;width:420px;height:100vh;background:var(--card);border-left:1px solid var(--b2);z-index:151;overflow-y:auto;transform:translateX(100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);box-shadow:-16px 0 48px rgba(0,0,0,0.4);}
+#sp-content{padding:20px;}
+
+/* MODAL */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;backdrop-filter:blur(3px);}
+#modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:201;width:min(640px,95vw);max-height:90vh;overflow-y:auto;background:var(--card);border:1px solid var(--b2);border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,0.5);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--b);position:sticky;top:0;background:var(--card);z-index:1;border-radius:16px 16px 0 0;}
+.modal-body{padding:20px 24px 24px;}
+.flbl{display:block;font-size:12px;font-weight:500;color:var(--t2);margin-bottom:6px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.fgrp{margin-bottom:16px;}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:99px;}
+
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+  <div class="logo">
+    <div class="logo-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h10M3 8h7M3 12h5"/></svg></div>
+    Executive Summary Dashboard
+  </div>
+  <div class="ntabs">
+    <button class="ntab" onclick="goPage('exec')"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5.5" height="5.5" rx="1"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1"/></svg>Executive Summary</button>
+    <button class="ntab" onclick="goPage('channel')"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,11 4,7 7,9 10,5 14,2"/></svg>Channel Overview</button>
+    <button class="ntab" onclick="goPage('content-post')"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="12" height="12" rx="1.5"/><line x1="4" y1="5" x2="11" y2="5"/><line x1="4" y1="7.5" x2="11" y2="7.5"/><line x1="4" y1="10" x2="8" y2="10"/></svg>Content &amp; Post Analysis</button>
+    <button class="ntab" onclick="goPage('audience')"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5.5" cy="4.5" r="2.5"/><circle cx="10.5" cy="10.5" r="2.5"/><path d="M5.5 7v1.5A2.5 2.5 0 0 0 8 11"/></svg>Audience &amp; Demographic Insights</button>
+    <button class="ntab active" id="nav-campaign" onclick="goPage('campaign')"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11s1-3 5-3 5 3 5 3"/><path d="M8 5c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/><path d="M12 3l1 1-5.5 5.5"/></svg>Campaign &amp; Content Orchestration</button>
+    <button class="ntab" id="nav-news" onclick="goPage('news')"><svg viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h11M2 7.5h7M2 11h5"/><path d="M12 9l1.5 1.5L16 8"/></svg>News Clipping</button>
+  </div>
+  <div class="nr">
+    <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);cursor:pointer;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 1.5c-2 2-3 4-3 6s1 4 3 6M7.5 1.5c2 2 3 4 3 6s-1 4-3 6M1.5 7.5h12"/></svg>EN</div>
+  </div>
+</nav>
+
+<!-- ===== CAMPAIGN PAGE ===== -->
+<div id="page-campaign" class="page active">
+  <div class="ph">
+    <div><div class="pt">Campaign &amp; Content Orchestration</div><div class="ps">Execution hub for campaigns, content planning, and resource allocation</div></div>
+    <div class="ha">
+      <button class="bo"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1.5" width="12" height="11" rx="1.5"/><line x1="4.5" y1="1.5" x2="4.5" y2="0"/><line x1="9.5" y1="1.5" x2="9.5" y2="0"/><line x1="1" y1="5" x2="13" y2="5"/></svg>Last 30 Days<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg></button>
+      <button class="bo"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1v8M4 6l3 3 3-3"/><path d="M2 10v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1"/></svg>EXPORT</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="ctabs">
+      <button class="ct active" onclick="showCTab('campaigns')"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="12" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="10.5" y2="5"/><line x1="3.5" y1="7.5" x2="10.5" y2="7.5"/><line x1="3.5" y1="10" x2="7.5" y2="10"/></svg>Campaigns</button>
+      <button class="ct" onclick="showCTab('kpi')"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><polyline points="4.5,7 6.5,9 9.5,5"/></svg>KPI &amp; ROI<span style="background:rgba(0,212,255,0.22);color:#00d4ff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:4px;">new</span></button>
+    </div>
+    <div id="ctab-campaigns" class="ctab-panel active">
+    <!-- Summary -->
+    <div class="sum2">
+      <div class="scard">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div class="scard-label">Active Campaigns</div>
+          <div class="scard-icon" style="background:var(--cyd);"><svg viewBox="0 0 16 16" fill="none" stroke="var(--cy)" stroke-width="1.6"><path d="M2 12s2-4 6-4 6 4 6 4"/><circle cx="8" cy="5" r="2"/></svg></div>
+        </div>
+        <div class="scard-val">11</div>
+        <div class="scard-sub">12 campaigns in range</div>
+      </div>
+      <div class="scard">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div class="scard-label">Total Budget</div>
+          <div class="scard-icon" style="background:var(--gnd);"><svg viewBox="0 0 16 16" fill="none" stroke="var(--gn)" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v6M6 6.5h3a1.5 1.5 0 0 1 0 3H6"/></svg></div>
+        </div>
+        <div class="scard-val">฿3.89M</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:45%;"></div></div>
+        <div class="scard-sub">45% used</div>
+      </div>
+    </div>
+    <!-- Campaigns table -->
+    <div class="tcard">
+      <div class="tcard-head">
+        <div class="tcard-title"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4l6-2 6 2v5c0 3-6 5-6 5S2 12 2 9V4z"/></svg>Campaigns</div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div style="position:relative;"><div style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="var(--t3)" stroke-width="1.5"><circle cx="5.5" cy="5.5" r="4"/><line x1="9" y1="9" x2="12" y2="12"/></svg></div><input type="text" placeholder="Search campaigns..." style="padding-left:32px;width:240px;"/></div>
+          <button class="bo" style="font-size:12px;padding:6px 12px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="1" y1="3.5" x2="12" y2="3.5"/><line x1="2.5" y1="6.5" x2="10.5" y2="6.5"/><line x1="4" y1="9.5" x2="9" y2="9.5"/></svg>Filter</button>
+          <button class="bp" style="font-size:12px;padding:6px 14px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2"><line x1="6.5" y1="2" x2="6.5" y2="11"/><line x1="2" y1="6.5" x2="11" y2="6.5"/></svg>+ Create Campaign</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <table>
+        <thead><tr><th>OB NUMBER</th><th>CAMPAIGN NAME</th><th>STATUS</th><th>BUDGET</th><th>TIMELINE</th><th style="text-align:right;">ACTIONS</th></tr></thead>
+        <tbody><tr><td style="font-size:12px;color:var(--t2);">OB-2026-001</td><td style="font-weight:600;">Q1 Heart Health Month</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿250,000</td><td style="font-size:12px;color:var(--t2);">1 Feb 2026 – 28 Feb 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2025-098</td><td style="font-weight:600;">Mental Health Awareness Q1</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿120,000</td><td style="font-size:12px;color:var(--t2);">15 Jan 2026 – 15 Apr 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2026-004</td><td style="font-weight:600;">Diabetes Prevention Campaign</td><td><span class="badge badge-am"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Paused</span></td><td style="font-weight:600;">฿450,000</td><td style="font-size:12px;color:var(--t2);">10 Feb 2026 – 10 May 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2026-006</td><td style="font-weight:600;">Telemedicine Launch 2026</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿1,200,000</td><td style="font-size:12px;color:var(--t2);">20 Feb 2026 – 20 Aug 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2026-008</td><td style="font-weight:600;">Healthy Workplace Initiative</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿200,000</td><td style="font-size:12px;color:var(--t2);">1 Jan 2026 – 31 Dec 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2026-011</td><td style="font-weight:600;">Maternal Health Support</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿280,000</td><td style="font-size:12px;color:var(--t2);">20 Jan 2026 – 20 Mar 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2026-012</td><td style="font-weight:600;">Youth Sports Engagement</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿180,000</td><td style="font-size:12px;color:var(--t2);">5 Feb 2026 – 5 Apr 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2026-013</td><td style="font-weight:600;">Elderly Care Digitalization</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿420,000</td><td style="font-size:12px;color:var(--t2);">10 Jan 2026 – 25 Feb 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2026-014</td><td style="font-weight:600;">Sustainable Living Q1</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿150,000</td><td style="font-size:12px;color:var(--t2);">15 Feb 2026 – 15 Mar 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr><tr><td style="font-size:12px;color:var(--t2);">OB-2026-015</td><td style="font-weight:600;">Financial Wellness for All</td><td><span class="badge badge-gn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="4"/><polyline points="3,5 4.5,6.5 7,3.5"/></svg>Active</span></td><td style="font-weight:600;">฿220,000</td><td style="font-size:12px;color:var(--t2);">1 Feb 2026 – 31 May 2026</td><td style="text-align:right;white-space:nowrap;"><button class="ib" title="Edit"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ib" title="View"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6.5s2-4.5 5.5-4.5S12 6.5 12 6.5 9.5 11 6.5 11 1 6.5 1 6.5z"/><circle cx="6.5" cy="6.5" r="1.8"/></svg></button><button class="ib" title="Delete"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr>        </tbody>
+      </table>
+      <div class="pag">
+        <span>Showing 1 - 10 of 12 campaigns</span>
+        <div class="pbs"><div class="pb off">&laquo;</div><div class="pb off">&lsaquo;</div><div class="pb active">1</div><div class="pb">2</div><div class="pb">&rsaquo;</div><div class="pb">&raquo;</div></div>
+      </div>
+    </div>
+  </div>
+    </div><!-- /ctab-campaigns -->
+
+    <!-- ══ KPI & ROI PANEL ══ -->
+    <div id="ctab-kpi" class="ctab-panel">
+
+      <!-- ── 6 KPI Summary Cards ── -->
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;">
+        <div style="background:var(--card);border:1px solid var(--b);border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:var(--gn);font-weight:600;margin-bottom:4px;">↑+6.8%</div>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:5px;">Total Spend</div>
+          <div style="font-size:22px;font-weight:700;">฿3.89M</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--b);border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:var(--gn);font-weight:600;margin-bottom:4px;">↑+15.2%</div>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:5px;">Total Views</div>
+          <div style="font-size:22px;font-weight:700;">5.8M</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--b);border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:var(--gn);font-weight:600;margin-bottom:4px;">↑+12.8%</div>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:5px;">Total Engagement</div>
+          <div style="font-size:22px;font-weight:700;">436K</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--b);border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:var(--gn);font-weight:600;margin-bottom:4px;">↑+18.5%</div>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:5px;">Conversions (คลิก/อ่าน)</div>
+          <div style="font-size:22px;font-weight:700;">48,200</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--b);border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:var(--gn);font-weight:600;margin-bottom:4px;">↓-11.2%</div>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:5px;">Cost per Click (CPC)</div>
+          <div style="font-size:22px;font-weight:700;">฿80.7</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--b);border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:var(--gn);font-weight:600;margin-bottom:4px;">↑+24.8%</div>
+          <div style="font-size:11px;color:var(--t2);margin-bottom:5px;">ROI</div>
+          <div style="font-size:22px;font-weight:700;color:var(--gn);">+342%</div>
+        </div>
+      </div>
+
+      <!-- ── Spend vs Performance chart ── -->
+      <div style="background:var(--card);border:1px solid var(--b);border-radius:12px;padding:20px;margin-bottom:20px;">
+        <div style="font-size:14px;font-weight:600;margin-bottom:16px;">Spend vs Performance</div>
+        <svg width="100%" viewBox="0 0 900 180" preserveAspectRatio="none" style="height:140px;">
+          <defs>
+            <linearGradient id="gV" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00d9a3" stop-opacity="0.3"/><stop offset="100%" stop-color="#00d9a3" stop-opacity="0"/></linearGradient>
+            <linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00d4ff" stop-opacity="0.3"/><stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/></linearGradient>
+            <linearGradient id="gE" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff5b5b" stop-opacity="0.25"/><stop offset="100%" stop-color="#ff5b5b" stop-opacity="0"/></linearGradient>
+          </defs>
+          <line x1="0" y1="40" x2="900" y2="40" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+          <line x1="0" y1="80" x2="900" y2="80" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+          <line x1="0" y1="120" x2="900" y2="120" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+          <path d="M0,38 C150,35 300,32 450,30 C600,28 750,24 900,18" fill="none" stroke="#00d9a3" stroke-width="2.5"/>
+          <path d="M0,38 C150,35 300,32 450,30 C600,28 750,24 900,18 L900,180 L0,180Z" fill="url(#gV)"/>
+          <path d="M0,75 C150,77 300,80 450,82 C600,80 750,76 900,70" fill="none" stroke="#00d4ff" stroke-width="2.5"/>
+          <path d="M0,75 C150,77 300,80 450,82 C600,80 750,76 900,70 L900,180 L0,180Z" fill="url(#gS)"/>
+          <path d="M0,115 C150,112 300,110 450,108 C600,110 750,109 900,106" fill="none" stroke="#ff5b5b" stroke-width="2.5"/>
+          <path d="M0,115 C150,112 300,110 450,108 C600,110 750,109 900,106 L900,180 L0,180Z" fill="url(#gE)"/>
+          <path d="M0,148 C150,146 300,145 450,143 C600,142 750,141 900,139" fill="none" stroke="#ffb340" stroke-width="2"/>
+          <text x="10" y="176" fill="#5a6478" font-size="11" font-family="Inter,sans-serif">Week 1</text>
+          <text x="215" y="176" fill="#5a6478" font-size="11" font-family="Inter,sans-serif">Week 2</text>
+          <text x="435" y="176" fill="#5a6478" font-size="11" font-family="Inter,sans-serif">Week 3</text>
+          <text x="645" y="176" fill="#5a6478" font-size="11" font-family="Inter,sans-serif">Week 4</text>
+          <text x="845" y="176" fill="#5a6478" font-size="11" font-family="Inter,sans-serif">Week 5</text>
+        </svg>
+        <div style="display:flex;gap:20px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);"><span style="width:22px;height:2px;background:#ff5b5b;display:inline-block;border-radius:99px;"></span>Conversions (คลิก)</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);"><span style="width:22px;height:2px;background:#00d4ff;display:inline-block;border-radius:99px;"></span>Spend (฿)</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);"><span style="width:22px;height:2px;background:#00d9a3;display:inline-block;border-radius:99px;"></span>Views</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);"><span style="width:22px;height:2px;background:#ffb340;display:inline-block;border-radius:99px;"></span>Engagement</div>
+        </div>
+      </div>
+
+      <!-- ── Active Campaigns table ── -->
+      <div style="background:var(--card);border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+        <div style="padding:16px 20px 12px;font-size:14px;font-weight:600;">Active Campaigns</div>
+        <div style="height:1px;background:var(--b);"></div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr>
+              <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Campaign Name</th>
+              <th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Budget</th>
+              <th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Spend</th>
+              <th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Views</th>
+              <th style="text-align:center;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">CTR</th>
+              <th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">CPC</th>
+              <th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Clicks</th>
+              <th style="text-align:center;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">ROI</th>
+              <th style="text-align:center;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--b);">
+              <td style="padding:12px 16px;font-weight:500;">Q1 Heart Health Month</td>
+              <td style="padding:12px 16px;text-align:right;color:var(--t2);">฿250,000</td>
+              <td style="padding:12px 16px;text-align:right;color:var(--t2);">฿158,400</td>
+              <td style="padding:12px 16px;text-align:right;">1.58M</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;">8.5%</span></td>
+              <td style="padding:12px 16px;text-align:right;">฿48.25</td>
+              <td style="padding:12px 16px;text-align:right;">3,284</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;">+1,320%</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;">Active</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--b);">
+              <td style="padding:12px 16px;font-weight:500;">Telemedicine Launch 2026</td>
+              <td style="padding:12px 16px;text-align:right;color:var(--t2);">฿1,200,000</td>
+              <td style="padding:12px 16px;text-align:right;color:var(--t2);">฿820,000</td>
+              <td style="padding:12px 16px;text-align:right;">5.8M</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;">7.2%</span></td>
+              <td style="padding:12px 16px;text-align:right;">฿54.92</td>
+              <td style="padding:12px 16px;text-align:right;">14,930</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;">+988%</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;">Active</span></td>
+            </tr>
+            <tr>
+              <td style="padding:12px 16px;font-weight:500;">Diabetes Prevention Campaign</td>
+              <td style="padding:12px 16px;text-align:right;color:var(--t2);">฿450,000</td>
+              <td style="padding:12px 16px;text-align:right;color:var(--t2);">฿98,500</td>
+              <td style="padding:12px 16px;text-align:right;">1.44M</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--rdd);color:var(--rd);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;">5.8%</span></td>
+              <td style="padding:12px 16px;text-align:right;">฿56.18</td>
+              <td style="padding:12px 16px;text-align:right;">1,754</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--amd);color:var(--am);font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;">+620%</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--amd);color:var(--am);font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;">Paused</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── ROI Analysis + Cost & Budget Alerts ── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <!-- ROI Analysis -->
+        <div style="background:var(--card);border:1px solid var(--b);border-radius:12px;padding:18px 20px;">
+          <div style="font-size:14px;font-weight:600;margin-bottom:14px;">ROI Analysis</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+            <div style="background:var(--card2);border-radius:9px;padding:12px 14px;">
+              <div style="font-size:11px;color:var(--t2);margin-bottom:4px;">Media Value (CPM-based)</div>
+              <div style="font-size:22px;font-weight:700;color:var(--cy);">฿13.3M</div>
+            </div>
+            <div style="background:var(--card2);border-radius:9px;padding:12px 14px;">
+              <div style="font-size:11px;color:var(--t2);margin-bottom:4px;">Avg ROAS (Media Value / Spend)</div>
+              <div style="font-size:22px;font-weight:700;color:var(--gn);">3.4x</div>
+            </div>
+          </div>
+          <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Benchmark per Platform</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--card2);border-radius:8px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#4267B2;display:inline-block;"></span><span style="font-size:13px;">Facebook</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;background:var(--cyd);color:var(--cy);padding:2px 7px;border-radius:99px;font-weight:600;">CPM</span><span style="font-size:13px;font-weight:700;color:var(--cy);">฿45/1K</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--card2);border-radius:8px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#ff0050;display:inline-block;"></span><span style="font-size:13px;">TikTok</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;background:var(--pud);color:var(--pu);padding:2px 7px;border-radius:99px;font-weight:600;">CPM</span><span style="font-size:13px;font-weight:700;color:var(--t);">฿65/1K</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--card2);border-radius:8px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#06c755;display:inline-block;"></span><span style="font-size:13px;">LINE OA</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;background:var(--gnd);color:var(--gn);padding:2px 7px;border-radius:99px;font-weight:600;">CPM</span><span style="font-size:13px;font-weight:700;color:var(--t);">฿38/1K</span></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--card2);border-radius:8px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#ff0000;display:inline-block;"></span><span style="font-size:13px;">YouTube</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;background:var(--rdd);color:var(--rd);padding:2px 7px;border-radius:99px;font-weight:600;">CPV</span><span style="font-size:13px;font-weight:700;color:var(--t);">฿0.30/view</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cost & Budget Alerts -->
+        <div style="background:var(--card);border:1px solid var(--b);border-radius:12px;padding:18px 20px;">
+          <div style="font-size:14px;font-weight:600;margin-bottom:14px;">Cost &amp; Budget Alerts</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+            <div style="background:var(--card2);border-radius:9px;padding:12px 14px;"><div style="font-size:10px;color:var(--t3);margin-bottom:4px;">Cost Center</div><div style="font-size:13px;font-weight:600;color:var(--cy);">Marketing-001</div></div>
+            <div style="background:var(--card2);border-radius:9px;padding:12px 14px;"><div style="font-size:10px;color:var(--t3);margin-bottom:4px;">Period</div><div style="font-size:13px;font-weight:600;color:var(--cy);">Jan–May 2026</div></div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--t2);">Budget Utilization</span><span style="color:var(--am);font-weight:700;">45%</span></div>
+            <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;margin-bottom:4px;"><div style="width:45%;height:100%;background:var(--gn);border-radius:99px;"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);"><span>฿1.75M spent</span><span>฿3.89M budget</span></div>
+          </div>
+          <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Performance Alerts</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="background:var(--rdd);border:1px solid rgba(255,91,91,0.3);border-radius:8px;padding:10px 12px;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="var(--rd)" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><line x1="6" y1="3.5" x2="6" y2="6.5"/><line x1="6" y1="8.5" x2="6" y2="8.6" stroke-width="2" stroke-linecap="round"/></svg><span style="font-size:12px;font-weight:600;color:var(--rd);">Budget Exceeded</span></div>
+              <div style="font-size:11px;color:var(--t2);">Facebook campaign has exceeded allocated budget by 5%.</div>
+            </div>
+            <div style="background:var(--amd);border:1px solid rgba(255,179,64,0.3);border-radius:8px;padding:10px 12px;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="var(--am)" stroke-width="1.5"><path d="M6 1L11 10H1L6 1z"/><line x1="6" y1="5" x2="6" y2="7"/><line x1="6" y1="8.5" x2="6" y2="8.6" stroke-width="2" stroke-linecap="round"/></svg><span style="font-size:12px;font-weight:600;color:var(--am);">Forecast Below Threshold</span></div>
+              <div style="font-size:11px;color:var(--t2);">Diabetes Prevention: Actual 72% of forecast — below −15% threshold.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Forecast vs Actual ── -->
+      <div style="background:var(--card);border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px 12px;">
+          <div style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:7px;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="var(--cy)" stroke-width="1.5"><polyline points="1.5,12 5,7.5 8,10 11,6 14.5,3"/><polyline points="11,3 14.5,3 14.5,6.5"/></svg>Forecast vs Actual — Per Campaign</div>
+        </div>
+        <div style="height:1px;background:var(--b);"></div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr>
+            <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Campaign</th>
+            <th style="text-align:center;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Status</th>
+            <th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Budget</th>
+            <th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);min-width:200px;">Views — Forecast vs Actual</th>
+            <th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Media Value</th>
+            <th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">ROI</th>
+            <th style="text-align:center;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);">Var.</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--b);">
+              <td style="padding:12px 16px;"><div style="font-weight:600;font-size:13px;">Q1 Heart Health Month</div><div style="font-size:11px;color:var(--t3);">OB-2026-001</div></td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;">Active</span></td>
+              <td style="padding:12px 16px;text-align:right;font-weight:600;">฿250,000</td>
+              <td style="padding:12px 16px;">
+                <div style="font-size:11px;color:var(--t3);margin-bottom:3px;display:flex;justify-content:space-between;"><span>Forecast: 1.2M</span><span style="color:var(--gn);">Actual: 1.58M</span></div>
+                <div style="height:5px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;position:relative;"><div style="position:absolute;width:76%;height:100%;background:rgba(255,255,255,0.2);border-radius:99px;"></div><div style="position:absolute;width:100%;height:100%;background:var(--gn);border-radius:99px;"></div></div>
+                <div style="text-align:right;font-size:11px;font-weight:600;color:var(--gn);margin-top:2px;">132% of target</div>
+              </td>
+              <td style="padding:12px 16px;text-align:right;font-weight:600;color:var(--gn);">฿3.55M</td>
+              <td style="padding:12px 16px;text-align:right;font-weight:700;color:var(--gn);">1,320%</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;">↑ +32%</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--b);">
+              <td style="padding:12px 16px;"><div style="font-weight:600;font-size:13px;">Mental Health Awareness Q1</div><div style="font-size:11px;color:var(--t3);">OB-2025-098</div></td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--gnd);color:var(--gn);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;">Active</span></td>
+              <td style="padding:12px 16px;text-align:right;font-weight:600;">฿120,000</td>
+              <td style="padding:12px 16px;">
+                <div style="font-size:11px;color:var(--t3);margin-bottom:3px;display:flex;justify-content:space-between;"><span>Forecast: 600K</span><span style="color:var(--cy);">Actual: 570K</span></div>
+                <div style="height:5px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;position:relative;"><div style="position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.2);border-radius:99px;"></div><div style="position:absolute;width:95%;height:100%;background:var(--cy);border-radius:99px;"></div></div>
+                <div style="text-align:right;font-size:11px;font-weight:600;color:var(--cy);margin-top:2px;">95% of target</div>
+              </td>
+              <td style="padding:12px 16px;text-align:right;font-weight:600;color:var(--cy);">฿1.28M</td>
+              <td style="padding:12px 16px;text-align:right;font-weight:700;color:var(--cy);">967%</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:rgba(255,255,255,0.06);color:var(--t2);font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;">↓ −5%</span></td>
+            </tr>
+            <tr>
+              <td style="padding:12px 16px;"><div style="font-weight:600;font-size:13px;">Diabetes Prevention Campaign</div><div style="font-size:11px;color:var(--t3);">OB-2026-004</div></td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--amd);color:var(--am);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;">Paused</span></td>
+              <td style="padding:12px 16px;text-align:right;font-weight:600;">฿450,000</td>
+              <td style="padding:12px 16px;">
+                <div style="font-size:11px;color:var(--t3);margin-bottom:3px;display:flex;justify-content:space-between;"><span>Forecast: 2.0M</span><span style="color:var(--rd);">Actual: 1.44M ⚠</span></div>
+                <div style="height:5px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;position:relative;"><div style="position:absolute;width:100%;height:100%;background:rgba(255,255,255,0.2);border-radius:99px;"></div><div style="position:absolute;width:72%;height:100%;background:var(--rd);border-radius:99px;"></div></div>
+                <div style="text-align:right;font-size:11px;font-weight:600;color:var(--rd);margin-top:2px;">72% — below −15% threshold</div>
+              </td>
+              <td style="padding:12px 16px;text-align:right;font-weight:600;color:var(--am);">฿3.24M</td>
+              <td style="padding:12px 16px;text-align:right;font-weight:700;color:var(--am);">620%</td>
+              <td style="padding:12px 16px;text-align:center;"><span style="background:var(--rdd);color:var(--rd);font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;">↓ −28%</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 20px;font-size:12px;color:var(--t3);">
+          <span>Showing 1–3 of 12 campaigns</span>
+          <div style="display:flex;gap:4px;">
+            <div style="width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b);color:var(--t2);opacity:.3;">&laquo;</div>
+            <div style="width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b);background:var(--cy);color:#000;font-weight:700;">1</div>
+            <div style="width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b);color:var(--t2);cursor:pointer;">2</div>
+            <div style="width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b);color:var(--t2);cursor:pointer;">&rsaquo;</div>
+          </div>
+        </div>
+      </div></div></div>
+
+  </div>
+</div><!-- /page-campaign -->
+
+<!-- ===== NEWS CLIPPING PAGE ===== -->
+<div id="page-news" class="page">
+  <div class="ph">
+    <div><div class="pt">News Clipping</div><div class="ps">Manage and track external news coverage across all media channels</div></div>
+    <div class="ha">
+      <button class="bo"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1.5" width="12" height="11" rx="1.5"/><line x1="1" y1="5" x2="13" y2="5"/></svg>Last 30 Days<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg></button>
+      <button class="bo"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1v8M4 6l3 3 3-3"/><path d="M2 10v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1"/></svg>EXPORT</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <!-- Metric cards -->
+    <div class="metrics4">
+      <div class="mcard"><div class="mcard-top"><div class="mcard-lbl">Total Clippings</div><div class="mcard-icon" style="background:var(--cyd);"><svg viewBox="0 0 16 16" fill="none" stroke="var(--cy)" stroke-width="1.6"><rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="4.5" y1="6" x2="11.5" y2="6"/><line x1="4.5" y1="8.5" x2="11.5" y2="8.5"/><line x1="4.5" y1="11" x2="8" y2="11"/></svg></div></div><div class="mcard-val" style="color:var(--cy);">142</div><div class="mcard-d"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,7.5 5,3 9,7.5"/></svg>+18 this week</div></div>
+      <div class="mcard"><div class="mcard-top"><div class="mcard-lbl">News Outlets</div><div class="mcard-icon" style="background:var(--pud);"><svg viewBox="0 0 16 16" fill="none" stroke="var(--pu)" stroke-width="1.6"><rect x="1.5" y="3" width="13" height="10" rx="1.5"/><line x1="5" y1="3" x2="5" y2="13"/><line x1="1.5" y1="7" x2="14.5" y2="7"/></svg></div></div><div class="mcard-val" style="color:var(--pu);">37</div><div class="mcard-sub">media sources</div></div>
+      <div class="mcard"><div class="mcard-top"><div class="mcard-lbl">Positive Sentiment</div><div class="mcard-icon" style="background:var(--amd);"><svg viewBox="0 0 16 16" fill="none" stroke="var(--am)" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 9.5s.8 1.5 2.5 1.5 2.5-1.5 2.5-1.5"/><line x1="5.5" y1="6.5" x2="5.5" y2="6.5" stroke-linecap="round" stroke-width="2"/><line x1="10.5" y1="6.5" x2="10.5" y2="6.5" stroke-linecap="round" stroke-width="2"/></svg></div></div><div class="mcard-val" style="color:var(--am);">68%</div><div class="mcard-sub">of total coverage</div></div>
+      <div class="mcard"><div class="mcard-top"><div class="mcard-lbl">Last Updated</div><div class="mcard-icon" style="background:var(--bld);"><svg viewBox="0 0 16 16" fill="none" stroke="var(--bl)" stroke-width="1.6"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="4.5" x2="8" y2="8"/><line x1="8" y1="8" x2="10.5" y2="10"/></svg></div></div><div class="mcard-val" style="color:var(--bl);">27 May</div><div class="mcard-sub">2026 · มติชนออนไลน์</div></div>
+    </div>
+    <!-- Table -->
+    <div class="tcard">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px 0;"><div style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--cy)" stroke-width="1.6"><path d="M2 4h12M2 7.5h8.5M2 11h6"/></svg>All News Clippings</div></div>
+      <div class="nc-tbar">
+        <div class="sw"><div class="si"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="4.5"/><line x1="9.5" y1="9.5" x2="13" y2="13"/></svg></div><input type="text" placeholder="Search news clippings..."/></div>
+        <select class="fsel"><option>All Media Types</option><option>Online News</option><option>Social Media</option><option>Print Media</option><option>Broadcast / TV</option></select>
+        <select class="fsel"><option>All Sentiments</option><option>Positive</option><option>Neutral</option><option>Negative</option></select>
+        <div style="margin-left:auto;display:flex;gap:8px;">
+          <button class="bo" style="font-size:12px;padding:6px 12px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="1" y1="3.5" x2="12" y2="3.5"/><line x1="2.5" y1="6.5" x2="10.5" y2="6.5"/><line x1="4" y1="9.5" x2="9" y2="9.5"/></svg>Filter</button>
+          <button class="bp" style="font-size:12px;padding:6px 14px;" onclick="openModal()">+ Add Clipping</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <table>
+        <thead><tr><th>HEADLINE</th><th>OUTLET</th><th>PUBLISHED</th><th>TYPE</th><th>SENTIMENT</th><th>ACTIONS</th></tr></thead>
+        <tbody>
+          <tr onclick="openSP('nc1')" style="cursor:pointer;"><td><div class="ht">สวรส. เผยผลวิจัยหลักประกันสุขภาพถ้วนหน้าปี 2568</div><div class="hs">Health Policy · Universal Coverage</div></td><td style="font-size:13px;">มติชนออนไลน์</td><td style="font-size:12px;color:var(--t2);white-space:nowrap;">27 May 2026</td><td><span class="cb cb-on">Online</span></td><td><span class="nb nb-gn"><span class="dot" style="background:var(--gn);margin-right:3px;"></span>Positive</span></td><td style="white-space:nowrap;" onclick="event.stopPropagation()"><button class="ibnc" onclick="openSP('nc1')"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ibnc"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2.5H2.5A1.5 1.5 0 0 0 1 4v7a1.5 1.5 0 0 0 1.5 1.5H9A1.5 1.5 0 0 0 10.5 11V7.5M7 1h5v5M12 1L6.5 6.5"/></svg></button><button class="ibnc del"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr>
+          <tr onclick="openSP('nc2')" style="cursor:pointer;"><td><div class="ht">งานวิจัยสุขภาพในพื้นที่ชนบทแสดงผลลัพธ์ที่มีแนวโน้มดี</div><div class="hs">Rural Health · Research Outcomes</div></td><td style="font-size:13px;">Thai PBS</td><td style="font-size:12px;color:var(--t2);white-space:nowrap;">26 May 2026</td><td><span class="cb cb-on">Online</span></td><td><span class="nb nb-gn"><span class="dot" style="background:var(--gn);margin-right:3px;"></span>Positive</span></td><td style="white-space:nowrap;" onclick="event.stopPropagation()"><button class="ibnc" onclick="openSP('nc2')"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ibnc"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2.5H2.5A1.5 1.5 0 0 0 1 4v7a1.5 1.5 0 0 0 1.5 1.5H9A1.5 1.5 0 0 0 10.5 11V7.5M7 1h5v5M12 1L6.5 6.5"/></svg></button><button class="ibnc del"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr>
+          <tr onclick="openSP('nc3')" style="cursor:pointer;"><td><div class="ht">กระบวนการอนุมัติยาใหม่กำลังถูกทบทวน สวรส. ร่วมปฏิรูป</div><div class="hs">Drug Policy · Health Reform</div></td><td style="font-size:13px;">ข่าวสด</td><td style="font-size:12px;color:var(--t2);white-space:nowrap;">25 May 2026</td><td><span class="cb cb-so">Social</span></td><td><span class="nb nb-gr"><span class="dot" style="background:var(--t3);margin-right:3px;"></span>Neutral</span></td><td style="white-space:nowrap;" onclick="event.stopPropagation()"><button class="ibnc" onclick="openSP('nc3')"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ibnc"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2.5H2.5A1.5 1.5 0 0 0 1 4v7a1.5 1.5 0 0 0 1.5 1.5H9A1.5 1.5 0 0 0 10.5 11V7.5M7 1h5v5M12 1L6.5 6.5"/></svg></button><button class="ibnc del"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr>
+          <tr onclick="openSP('nc4')" style="cursor:pointer;"><td><div class="ht">นักวิจัยกังวลการลดงบประมาณส่งผลต่อความต่อเนื่องของโครงการ</div><div class="hs">Budget · Research Continuity</div></td><td style="font-size:13px;">โพสต์ทูเดย์</td><td style="font-size:12px;color:var(--t2);white-space:nowrap;">24 May 2026</td><td><span class="cb cb-on">Online</span></td><td><span class="nb nb-rd"><span class="dot" style="background:var(--rd);margin-right:3px;"></span>Negative</span></td><td style="white-space:nowrap;" onclick="event.stopPropagation()"><button class="ibnc" onclick="openSP('nc4')"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ibnc"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2.5H2.5A1.5 1.5 0 0 0 1 4v7a1.5 1.5 0 0 0 1.5 1.5H9A1.5 1.5 0 0 0 10.5 11V7.5M7 1h5v5M12 1L6.5 6.5"/></svg></button><button class="ibnc del"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr>
+          <tr onclick="openSP('nc5')" style="cursor:pointer;"><td><div class="ht">สวรส. นำเสนอผลต้นทุนประสิทธิผลนโยบายสุขภาพแห่งชาติ</div><div class="hs">Cost Effectiveness · National Policy</div></td><td style="font-size:13px;">ไทยรัฐออนไลน์</td><td style="font-size:12px;color:var(--t2);white-space:nowrap;">23 May 2026</td><td><span class="cb cb-pr">Print</span></td><td><span class="nb nb-gn"><span class="dot" style="background:var(--gn);margin-right:3px;"></span>Positive</span></td><td style="white-space:nowrap;" onclick="event.stopPropagation()"><button class="ibnc" onclick="openSP('nc5')"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg></button><button class="ibnc"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2.5H2.5A1.5 1.5 0 0 0 1 4v7a1.5 1.5 0 0 0 1.5 1.5H9A1.5 1.5 0 0 0 10.5 11V7.5M7 1h5v5M12 1L6.5 6.5"/></svg></button><button class="ibnc del"><svg viewBox="0 0 13 13" fill="none" stroke="var(--rd)" stroke-width="1.5"><polyline points="2,3.5 11,3.5"/><path d="M4.5 3.5V2.5h4v1M5 6v4M8 6v4M2.5 3.5l.7 7.3A1 1 0 0 0 4.2 12h4.6a1 1 0 0 0 1-.9L10.5 3.5"/></svg></button></td></tr>
+        </tbody>
+      </table>
+      <div class="pag">
+        <span>Showing 1 – 5 of 142 clippings</span>
+        <div class="pbs"><div class="pb off">&laquo;</div><div class="pb off">&lsaquo;</div><div class="pb active">1</div><div class="pb">2</div><div class="pb">3</div><div class="pb">&rsaquo;</div><div class="pb">&raquo;</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /page-news -->
+
+<!-- SIDE PANEL -->
+<div id="sp-overlay" onclick="closeSP()"></div>
+<div id="sp">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 16px;border-bottom:1px solid var(--b);position:sticky;top:0;background:var(--card);z-index:1;">
+    <div style="font-size:13px;font-weight:600;color:var(--t2);display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--cy)" stroke-width="1.5"><rect x="1" y="1" width="12" height="12" rx="1.5"/><line x1="3.5" y1="5" x2="10.5" y2="5"/><line x1="3.5" y1="7.5" x2="10.5" y2="7.5"/><line x1="3.5" y1="10" x2="7.5" y2="10"/></svg>News Detail</div>
+    <button onclick="closeSP()" style="width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,0.05);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="11" y2="11"/><line x1="11" y1="2" x2="2" y2="11"/></svg></button>
+  </div>
+  <div id="sp-content"></div>
+</div>
+
+<!-- ADD MODAL -->
+<div id="modal-overlay" onclick="closeModal()"></div>
+<div id="modal">
+  <div class="modal-head">
+    <div style="display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;border-radius:9px;background:var(--cyd);display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="var(--cy)" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="7"/><line x1="8.5" y1="5.5" x2="8.5" y2="11.5"/><line x1="5.5" y1="8.5" x2="11.5" y2="8.5"/></svg></div><div><div style="font-size:15px;font-weight:700;">Add News Clipping</div><div style="font-size:12px;color:var(--t2);margin-top:1px;">กรอกข้อมูลข่าวจากสื่อภายนอก</div></div></div>
+    <button onclick="closeModal()" style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg></button>
+  </div>
+  <div class="modal-body">
+    <div class="fgrp"><label class="flbl">หัวข้อข่าว <span style="color:var(--cy);">*</span></label><input type="text" placeholder="กรอกหัวข้อข่าว..."/></div>
+    <div class="fg2"><div><label class="flbl">สำนักข่าว <span style="color:var(--cy);">*</span></label><input type="text" placeholder="เช่น มติชน, Thai PBS..."/></div><div><label class="flbl">ประเภทสื่อ <span style="color:var(--cy);">*</span></label><select><option value="">— เลือกประเภท —</option><option>Online News</option><option>Facebook</option><option>X (Twitter)</option><option>YouTube</option><option>Instagram</option><option>Print Media</option><option>Television / Broadcast</option><option>Radio</option></select></div></div>
+    <div class="fg2"><div><label class="flbl">วันที่เผยแพร่ <span style="color:var(--cy);">*</span></label><input type="date"/></div><div><label class="flbl">ลิงก์ข่าว</label><input type="url" placeholder="https://..."/></div></div>
+    <div class="fg2"><div><label class="flbl">Sentiment</label><select><option>Positive</option><option>Neutral</option><option>Negative</option></select></div><div><label class="flbl">Tags</label><input type="text" placeholder="เช่น UHC, นโยบายสุขภาพ..."/></div></div>
+    <div class="fgrp"><label class="flbl">สรุปเนื้อหา</label><textarea placeholder="สรุปประเด็นสำคัญ..." style="resize:none;height:80px;line-height:1.6;"></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--b);">
+      <button class="bo" onclick="closeModal()">ยกเลิก</button>
+      <button class="bp"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1.5,7.5 5.5,11.5 12.5,3"/></svg>บันทึกข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ncData = {
+  nc1:{headline:'สวรส. เผยผลวิจัยหลักประกันสุขภาพถ้วนหน้าปี 2568',sub:'Health Policy · Universal Coverage',outlet:'มติชนออนไลน์',date:'27 May 2026',type:'Online',tc:'cb-on',sentiment:'Positive',sc:'nb-gn',dc:'var(--gn)',url:'https://www.matichon.co.th/',summary:'สวรส. เปิดเผยผลการวิจัยระบบหลักประกันสุขภาพถ้วนหน้าประจำปี 2568 พบว่าประชากรสามารถเข้าถึงบริการสุขภาพเพิ่มขึ้น 12% เมื่อเทียบกับปีก่อน โดยเฉพาะในพื้นที่ชนบทห่างไกล',tags:'UHC, หลักประกันสุขภาพ, สวรส.'},
+  nc2:{headline:'งานวิจัยสุขภาพในพื้นที่ชนบทแสดงผลลัพธ์ที่มีแนวโน้มดี',sub:'Rural Health · Research Outcomes',outlet:'Thai PBS',date:'26 May 2026',type:'Online',tc:'cb-on',sentiment:'Positive',sc:'nb-gn',dc:'var(--gn)',url:'https://www.thaipbs.or.th/',summary:'รายงานผลการวิจัยด้านสุขภาพในพื้นที่ชนบทชี้ให้เห็นถึงความก้าวหน้าในการลดความเหลื่อมล้ำด้านสุขภาพ',tags:'Rural Health, ชนบท, วิจัย'},
+  nc3:{headline:'กระบวนการอนุมัติยาใหม่กำลังถูกทบทวน สวรส. ร่วมปฏิรูป',sub:'Drug Policy · Health Reform',outlet:'ข่าวสด',date:'25 May 2026',type:'Social',tc:'cb-so',sentiment:'Neutral',sc:'nb-gr',dc:'var(--t3)',url:'https://www.khaosod.co.th/',summary:'กระทรวงสาธารณสุขและ สวรส. ร่วมกันทบทวนกระบวนการอนุมัติยาใหม่เพื่อให้มีความรวดเร็วและโปร่งใสมากขึ้น',tags:'Drug Policy, การปฏิรูป, ยา'},
+  nc4:{headline:'นักวิจัยกังวลการลดงบประมาณส่งผลต่อความต่อเนื่องของโครงการ',sub:'Budget · Research Continuity',outlet:'โพสต์ทูเดย์',date:'24 May 2026',type:'Online',tc:'cb-on',sentiment:'Negative',sc:'nb-rd',dc:'var(--rd)',url:'https://www.posttoday.com/',summary:'นักวิจัยด้านสาธารณสุขหลายสถาบันแสดงความกังวลต่อการปรับลดงบประมาณด้านการวิจัยสุขภาพในปีงบประมาณหน้า',tags:'งบประมาณ, วิจัย, นโยบาย'},
+  nc5:{headline:'สวรส. นำเสนอผลต้นทุนประสิทธิผลนโยบายสุขภาพแห่งชาติ',sub:'Cost Effectiveness · National Policy',outlet:'ไทยรัฐออนไลน์',date:'23 May 2026',type:'Print',tc:'cb-pr',sentiment:'Positive',sc:'nb-gn',dc:'var(--gn)',url:'https://www.thairath.co.th/',summary:'สวรส. นำเสนอรายงานการวิเคราะห์ต้นทุนประสิทธิผลของนโยบายสุขภาพแห่งชาติ พบว่าการลงทุนด้านสุขภาพเชิงป้องกันให้ผลตอบแทนสูงกว่าการรักษาพยาบาล 3.2 เท่า',tags:'Cost-effectiveness, นโยบายสุขภาพ, ROI'},
+};
+
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
+  const map = {exec:'page-campaign',channel:'page-campaign','content-post':'page-campaign',audience:'page-campaign',campaign:'page-campaign',news:'page-news'};
+  const ni = {exec:0,channel:1,'content-post':2,audience:3,campaign:4,news:5};
+  document.getElementById(map[name]).classList.add('active');
+  document.querySelectorAll('.ntab')[ni[name]].classList.add('active');
+}
+
+function openSP(id) {
+  const d = ncData[id]; if(!d) return;
+  const tags = d.tags.split(',').map(t=>`<span style="font-size:11px;color:var(--pu);background:var(--pud);padding:3px 9px;border-radius:99px;">${t.trim()}</span>`).join('');
+  document.getElementById('sp-content').innerHTML = `
+    <div style="padding:20px;">
+      <div style="font-size:15px;font-weight:700;color:var(--t,#e8eaf0);line-height:1.5;margin-bottom:6px;">${d.headline}</div>
+      <div style="font-size:12px;color:var(--t3,#5a6478);margin-bottom:14px;">${d.sub}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;">
+        <span class="cb ${d.tc}">${d.type}</span>
+        <span class="nb ${d.sc}"><span style="width:6px;height:6px;border-radius:50%;display:inline-block;background:${d.dc};margin-right:3px;"></span>${d.sentiment}</span>
+        <span style="font-size:11px;color:var(--t2,#8b94a8);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:99px;">${d.date}</span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:14px;"></div>
+      <div style="font-size:10px;font-weight:700;color:var(--t3,#5a6478);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">แหล่งที่มา</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:600;">${d.outlet}</div>
+        <a href="${d.url}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#00d4ff;text-decoration:none;background:rgba(0,212,255,0.12);padding:5px 11px;border-radius:7px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2.5H2.5A1.5 1.5 0 0 0 1 4v5.5A1.5 1.5 0 0 0 2.5 11h5.5A1.5 1.5 0 0 0 9.5 9.5V7M7 1h4v4M11 1L5.5 6.5"/></svg>เปิดลิงก์</a>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:14px;"></div>
+      <div style="font-size:10px;font-weight:700;color:var(--t3,#5a6478);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">สรุปเนื้อหา</div>
+      <div style="font-size:13px;color:#8b94a8;line-height:1.75;background:#1e2740;border-radius:8px;padding:12px 14px;margin-bottom:14px;">${d.summary}</div>
+      <div style="font-size:10px;font-weight:700;color:var(--t3,#5a6478);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;">Tags</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">${tags}</div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin:4px 0 14px;"></div>
+      <button onclick="openEdit('${id}')" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;border:1px solid rgba(255,255,255,0.14);background:transparent;color:#8b94a8;">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg>Edit
+      </button>
+    </div>`;
+  document.getElementById('sp-overlay').style.display = 'block';
+  document.getElementById('sp').style.display = 'block';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ document.getElementById('sp').style.transform='translateX(0)'; }));
+}
+
+function closeSP() {
+  document.getElementById('sp').style.transform = 'translateX(100%)';
+  document.getElementById('sp-overlay').style.display = 'none';
+  setTimeout(()=>{ document.getElementById('sp').style.display='none'; }, 280);
+}
+
+function openEdit(id) {
+  const d = ncData[id]; if(!d) return;
+  const sel=(opts,val)=>opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('');
+  document.getElementById('sp-content').innerHTML = `
+    <div style="padding:20px;">
+      <div style="font-size:13px;font-weight:600;color:#8b94a8;margin-bottom:14px;display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#00d4ff" stroke-width="1.5"><path d="M8.5 2l2.5 2.5L4 11H1.5V8.5L8.5 2z"/></svg>แก้ไขข้อมูลข่าว</div>
+      <div style="margin-bottom:12px;"><label style="display:block;font-size:11px;font-weight:500;color:#5a6478;margin-bottom:5px;">หัวข้อข่าว</label><input id="e-h" value="${d.headline}"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div><label style="display:block;font-size:11px;font-weight:500;color:#5a6478;margin-bottom:5px;">สำนักข่าว</label><input id="e-o" value="${d.outlet}"/></div>
+        <div><label style="display:block;font-size:11px;font-weight:500;color:#5a6478;margin-bottom:5px;">Sentiment</label><select id="e-s" style="background:#0d1117;border:1px solid rgba(255,255,255,0.14);border-radius:7px;color:#e8eaf0;font-family:inherit;font-size:13px;padding:8px 11px;width:100%;">${sel(['Positive','Neutral','Negative'],d.sentiment)}</select></div>
+      </div>
+      <div style="margin-bottom:12px;"><label style="display:block;font-size:11px;font-weight:500;color:#5a6478;margin-bottom:5px;">Tags</label><input id="e-t" value="${d.tags}"/></div>
+      <div style="margin-bottom:16px;"><label style="display:block;font-size:11px;font-weight:500;color:#5a6478;margin-bottom:5px;">สรุปเนื้อหา</label><textarea id="e-sum" rows="4" style="background:#0d1117;border:1px solid rgba(255,255,255,0.14);border-radius:7px;color:#e8eaf0;font-family:inherit;font-size:13px;padding:8px 11px;width:100%;resize:none;line-height:1.6;">${d.summary}</textarea></div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="openSP('${id}')" style="flex:1;padding:9px;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;border:1px solid rgba(255,255,255,0.14);background:transparent;color:#8b94a8;">ยกเลิก</button>
+        <button onclick="saveEdit('${id}')" style="flex:2;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;border:none;background:linear-gradient(135deg,#00d4ff,#0090cc);color:#000;font-weight:700;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="1.5,7 5,10.5 11.5,2.5"/></svg>บันทึก</button>
+      </div>
+    </div>`;
+}
+
+function saveEdit(id) {
+  const d = ncData[id]; if(!d) return;
+  const h=document.getElementById('e-h')?.value; if(h) d.headline=h;
+  const o=document.getElementById('e-o')?.value; if(o) d.outlet=o;
+  const t=document.getElementById('e-t')?.value; if(t) d.tags=t;
+  const s=document.getElementById('e-sum')?.value; if(s) d.summary=s;
+  const rows=document.querySelectorAll('#page-news tbody tr');
+  const idx=Object.keys(ncData).indexOf(id);
+  if(rows[idx]){ const ht=rows[idx].querySelector('.ht'); if(ht) ht.textContent=d.headline; }
+  openSP(id);
+}
+
+function openModal() {
+  document.getElementById('modal-overlay').style.display='block';
+  document.getElementById('modal').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closeModal() {
+  document.getElementById('modal-overlay').style.display='none';
+  document.getElementById('modal').style.display='none';
+  document.body.style.overflow='';
+}
+
+function showCTab(name) {
+  document.querySelectorAll('.ctab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ct').forEach(t => t.classList.remove('active'));
+  document.getElementById('ctab-' + name).classList.add('active');
+  const idx = {campaigns:0, kpi:1}[name];
+  document.querySelectorAll('.ct')[idx].classList.add('active');
+}
+
+
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeSP(); } });
+</script>
+</body>
+</html>
